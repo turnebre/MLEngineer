@@ -156,7 +156,7 @@ def classification_report_image(
     output:
              None
     """
-    plt.rc("figure", figsize=(5, 10))
+    plt.rc("figure", figsize=(5, 5))
     plt.text(
         0.01,
         1.25,
@@ -192,7 +192,7 @@ def classification_report_image(
     # Close the figure
     plt.close()
 
-    plt.rc("figure", figsize=(5, 10))
+    plt.rc("figure", figsize=(5, 5))
 
     plt.text(
         0.01,
