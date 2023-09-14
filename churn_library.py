@@ -51,6 +51,35 @@ def perform_eda(df):
     df.isnull().sum()
     df.describe()
 
+    plt.figure(figsize=(20, 10))
+    df["Churn"].hist()
+
+    # Save the figure as a PNG image
+    plt.savefig("images/churn_histogram.png")
+
+    plt.figure(figsize=(20, 10))
+    df["Customer_Age"].hist()
+
+    # Save the figure as a PNG image
+    plt.savefig("images/customer_age_histogram.png")
+
+    plt.figure(figsize=(20, 10))
+    df.Marital_Status.value_counts("normalize").plot(kind="bar")
+
+    # Save the figure as a PNG image
+    plt.savefig("images/marital_status_count.png")
+
+    plt.figure(figsize=(20, 10))
+    sns.histplot(df["Total_Trans_Ct"], stat="density", kde=True)
+
+    # Save the figure as a PNG image
+    plt.savefig("images/transactions_distribution.png")
+
+    plt.figure(figsize=(20, 10))
+    sns.heatmap(df.corr(), annot=False, cmap="Dark2_r", linewidths=2)
+    # Save the figure as a PNG image
+    plt.savefig("images/confusion_matrix.png")
+
 
 def encoder_helper(df, category_lst, response="Churn"):
     """
@@ -65,6 +94,10 @@ def encoder_helper(df, category_lst, response="Churn"):
     output:
             df: pandas dataframe with new columns for
     """
+    df["Churn"] = df["Attrition_Flag"].apply(
+        lambda val: 0 if val == "Existing Customer" else 1
+    )
+
     for category in category_lst:
         lst = []
         groups = df.groupby(category).mean()[response]
@@ -90,14 +123,6 @@ def perform_feature_engineering(df, response="Churn"):
               y_test: y testing data
     """
 
-    cat_columns = [
-        "Gender",
-        "Education_Level",
-        "Marital_Status",
-        "Income_Category",
-        "Card_Category",
-    ]
-
     keep_cols = [
         "Customer_Age",
         "Dependent_count",
@@ -120,11 +145,6 @@ def perform_feature_engineering(df, response="Churn"):
         "Card_Category_Churn",
     ]
 
-    df["Churn"] = df["Attrition_Flag"].apply(
-        lambda val: 0 if val == "Existing Customer" else 1
-    )
-
-    X = encoder_helper(df, cat_columns)
     y = df[response]
     X = df[keep_cols]
     X_train, X_test, y_train, y_test = train_test_split(
@@ -346,7 +366,16 @@ def train_models(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
+    cat_columns = [
+        "Gender",
+        "Education_Level",
+        "Marital_Status",
+        "Income_Category",
+        "Card_Category",
+    ]
+
     BankChurners = import_data("data/BankChurners.csv")
+    BankChurners = encoder_helper(BankChurners, cat_columns)
     perform_eda(BankChurners)
     X_train, X_test, y_train, y_test = perform_feature_engineering(BankChurners)
     train_models(X_train, X_test, y_train, y_test)
