@@ -14,7 +14,6 @@ import seaborn as sns
 
 sns.set()
 
-from sklearn.preprocessing import normalize
 from sklearn.model_selection import train_test_split
 
 from sklearn.linear_model import LogisticRegression
@@ -37,7 +36,7 @@ def import_data(pth):
     return df
 
 
-def perform_eda(df):
+def perform_eda(import_data):
     """
     perform eda on df and save figures to images folder
     input:
@@ -46,6 +45,7 @@ def perform_eda(df):
     output:
             None
     """
+    df = import_data
     df.head()
     df.shape
     df.isnull().sum()
@@ -81,7 +81,7 @@ def perform_eda(df):
     plt.savefig("images/confusion_matrix.png")
 
 
-def encoder_helper(df, category_lst, response="Churn"):
+def encoder_helper(df, response="Churn"):
     """
     helper function to turn each categorical column into a new column with
     propotion of churn for each category - associated with cell 15 from the notebook
@@ -97,6 +97,14 @@ def encoder_helper(df, category_lst, response="Churn"):
     df["Churn"] = df["Attrition_Flag"].apply(
         lambda val: 0 if val == "Existing Customer" else 1
     )
+
+    category_lst = [
+        "Gender",
+        "Education_Level",
+        "Marital_Status",
+        "Income_Category",
+        "Card_Category",
+    ]
 
     for category in category_lst:
         lst = []
@@ -366,16 +374,8 @@ def train_models(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    cat_columns = [
-        "Gender",
-        "Education_Level",
-        "Marital_Status",
-        "Income_Category",
-        "Card_Category",
-    ]
-
     BankChurners = import_data("data/BankChurners.csv")
-    BankChurners = encoder_helper(BankChurners, cat_columns)
+    BankChurners = encoder_helper(BankChurners)
     perform_eda(BankChurners)
     X_train, X_test, y_train, y_test = perform_feature_engineering(BankChurners)
     train_models(X_train, X_test, y_train, y_test)
