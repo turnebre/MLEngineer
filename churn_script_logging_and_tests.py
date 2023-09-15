@@ -16,16 +16,6 @@ def import_data():
     return cl.import_data("data/BankChurners.csv")
 
 
-@pytest.fixture
-def encoder_helper(import_data):
-    return cl.encoder_helper(import_data)
-
-
-@pytest.fixture
-def perform_eda(encoder_helper):
-    return cl.perform_eda(encoder_helper)
-
-
 def test_import(import_data):
     """
     test data import - this example is completed for you to assist with the other test functions
@@ -45,6 +35,11 @@ def test_import(import_data):
             "Testing import_data: The file doesn't appear to have rows and columns"
         )
         raise err
+
+
+@pytest.fixture
+def encoder_helper(import_data):
+    return cl.encoder_helper(import_data)
 
 
 def test_eda(perform_eda):
@@ -78,6 +73,11 @@ def test_eda(perform_eda):
             raise err
 
 
+@pytest.fixture
+def perform_eda(encoder_helper):
+    return cl.perform_eda(encoder_helper)
+
+
 def test_encoder_helper(encoder_helper):
     """
     test encoder helper
@@ -99,10 +99,27 @@ def test_encoder_helper(encoder_helper):
         raise err
 
 
+@pytest.fixture
+def perform_feature_engineering(encoder_helper):
+    return cl.perform_feature_engineering(encoder_helper)
+
+
 def test_perform_feature_engineering(perform_feature_engineering):
     """
     test perform_feature_engineering
     """
+    try:
+        X_train, X_test, y_train, y_test = perform_feature_engineering
+        assert X_train.shape[0] > 0 and X_train.shape[1] > 0
+        assert X_test.shape[0] > 0 and X_test.shape[1] > 0
+        assert y_train.shape[0] > 0
+        assert y_test.shape[0] > 0
+        logging.info("SUCCESS: All datasets successfully loaded.")
+    except Exception as err:
+        logging.error(
+            "ERROR: Could not load all datasets.  Refer to error for more details"
+        )
+        raise err
 
 
 def test_train_models(train_models):
