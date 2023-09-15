@@ -42,6 +42,25 @@ def encoder_helper(import_data):
     return cl.encoder_helper(import_data)
 
 
+def test_encoder_helper(encoder_helper):
+    """
+    test encoder helper
+    """
+    df = encoder_helper
+
+    try:
+        assert df.shape[0] > 0
+        assert df.shape[1] > 0
+    except Exception as err:
+        logging.error("ERROR: The file doesn't appear to have rows and columns")
+        raise err
+
+
+@pytest.fixture
+def perform_eda(encoder_helper):
+    return cl.perform_eda(encoder_helper)
+
+
 def test_eda(perform_eda):
     """
     test perform eda function
@@ -74,32 +93,6 @@ def test_eda(perform_eda):
 
 
 @pytest.fixture
-def perform_eda(encoder_helper):
-    return cl.perform_eda(encoder_helper)
-
-
-def test_encoder_helper(encoder_helper):
-    """
-    test encoder helper
-    """
-    try:
-        df = encoder_helper
-        logging.info("Testing encoder_helper: SUCCESS")
-    except Exception as err:
-        logging.error("ERROR: Testing import_eda:could not run encoder_helper")
-        raise err
-
-    try:
-        assert df.shape[0] > 0
-        assert df.shape[1] > 0
-    except AssertionError as err:
-        logging.error(
-            "Testing encoder_helper: The file doesn't appear to have rows and columns"
-        )
-        raise err
-
-
-@pytest.fixture
 def perform_feature_engineering(encoder_helper):
     return cl.perform_feature_engineering(encoder_helper)
 
@@ -108,6 +101,8 @@ def test_perform_feature_engineering(perform_feature_engineering):
     """
     test perform_feature_engineering
     """
+
+    # Check train and tests sets aren't empty
     try:
         X_train, X_test, y_train, y_test = perform_feature_engineering
         assert X_train.shape[0] > 0 and X_train.shape[1] > 0
@@ -122,10 +117,52 @@ def test_perform_feature_engineering(perform_feature_engineering):
         raise err
 
 
+@pytest.fixture
+def train_models(perform_feature_engineering):
+    X_train, X_test, y_train, y_test = perform_feature_engineering
+    return cl.train_models(X_train, X_test, y_train, y_test)
+
+
 def test_train_models(train_models):
     """
     test train_models
     """
+
+    # Check models have been saved
+    try:
+        train_models
+        rfc_model = os.path.join("models", "rfc_model.pkl")
+        assert os.path.isfile(rfc_model)
+        logistic_model = os.path.join("models", "logistic_model.pkl")
+        assert os.path.isfile(logistic_model)
+        logging.info("SUCCESS: Models successfully saved")
+    except Exception as err:
+        logging.error("ERROR: Models did not save. Refer to error for more details.")
+
+    # Check classification_report_image saved reports
+    try:
+        random_forest_report = os.path.join("images", "random_forest_report.png")
+        assert os.path.isfile(random_forest_report)
+        logistic_regression_report = os.path.join(
+            "images", "logistic_regression_report.png"
+        )
+        assert os.path.isfile(logistic_regression_report)
+        logging.info("SUCCESS: Classification Reports successfully saved.")
+    except Exception as err:
+        logging.error(
+            "ERROR: Classification Reports did not save. Refer to error for more details."
+        )
+
+    # Check feature_importance_plot saved plot
+    try:
+        feature_importance_plot = os.path.join("images", "feature_importance_plot.png")
+        assert os.path.isfile(feature_importance_plot)
+        logging.info("SUCCESS: Feature Importance Plot successfully saved.")
+    except Exception as err:
+        logging.error(
+            "ERROR: Feature Importance Plot did not save. Refer to error for more details."
+        )
+        raise err
 
 
 if __name__ == "__main__":
