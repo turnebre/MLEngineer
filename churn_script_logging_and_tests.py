@@ -1,3 +1,6 @@
+"""
+Test file to ensure churn_library.py correctly ran and outputted results to the appropriate directories.
+"""
 import os
 import logging
 import churn_library as cl
@@ -6,6 +9,9 @@ import pytest
 
 @pytest.fixture
 def import_data():
+    """
+    Fixture for import_data function
+    """
     return cl.import_data("data/BankChurners.csv")
 
 
@@ -32,6 +38,9 @@ def test_import(import_data):
 
 @pytest.fixture
 def encoder_helper(import_data):
+    """
+    Fixture for encoder_helper function
+    """
     return cl.encoder_helper(import_data)
 
 
@@ -45,12 +54,16 @@ def test_encoder_helper(encoder_helper):
         assert df.shape[0] > 0
         assert df.shape[1] > 0
     except Exception as err:
-        logging.error("ERROR: The file doesn't appear to have rows and columns")
+        logging.error(
+            "ERROR: The file doesn't appear to have rows and columns")
         raise err
 
 
 @pytest.fixture
 def perform_eda(encoder_helper):
+    """
+    Fixture for perform_eda function
+    """
     return cl.perform_eda(encoder_helper)
 
 
@@ -81,12 +94,16 @@ def test_eda(perform_eda):
             assert os.path.isfile(file_path)
             logging.info(f"SUCCESS: The file {fig} exists in the directory.")
         except AssertionError as err:
-            logging.error(f"FAILED: The file {fig} does not exist in the directory.")
+            logging.error(
+                f"FAILED: The file {fig} does not exist in the directory.")
             raise err
 
 
 @pytest.fixture
 def perform_feature_engineering(encoder_helper):
+    """
+    Fixture for perform_feature_engineering function
+    """
     return cl.perform_feature_engineering(encoder_helper)
 
 
@@ -112,6 +129,9 @@ def test_perform_feature_engineering(perform_feature_engineering):
 
 @pytest.fixture
 def train_models(perform_feature_engineering):
+    """
+    Fixture for train_models function
+    """
     X_train, X_test, y_train, y_test = perform_feature_engineering
     return cl.train_models(X_train, X_test, y_train, y_test)
 
@@ -130,11 +150,13 @@ def test_train_models(train_models):
         assert os.path.isfile(logistic_model)
         logging.info("SUCCESS: Models successfully saved")
     except Exception as err:
-        logging.error("ERROR: Models did not save. Refer to error for more details.")
+        logging.error(
+            "ERROR: Models did not save. Refer to error for more details.")
 
     # Check classification_report_image saved reports
     try:
-        random_forest_report = os.path.join("images", "random_forest_report.png")
+        random_forest_report = os.path.join(
+            "images", "random_forest_report.png")
         assert os.path.isfile(random_forest_report)
         logistic_regression_report = os.path.join(
             "images", "logistic_regression_report.png"
@@ -148,7 +170,8 @@ def test_train_models(train_models):
 
     # Check feature_importance_plot saved plot
     try:
-        feature_importance_plot = os.path.join("images", "feature_importance_plot.png")
+        feature_importance_plot = os.path.join(
+            "images", "feature_importance_plot.png")
         assert os.path.isfile(feature_importance_plot)
         logging.info("SUCCESS: Feature Importance Plot successfully saved.")
     except Exception as err:

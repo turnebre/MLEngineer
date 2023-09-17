@@ -1,26 +1,25 @@
 # library doc string
-
+"""
+Contains all the functions needed to import data, perform eda, and train models
+"""
 
 # import libraries
+from sklearn.metrics import plot_roc_curve, classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import joblib
+import shap
 import os
 
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
-import shap
-import joblib
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 sns.set()
-
-from sklearn.model_selection import train_test_split
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-
-from sklearn.metrics import plot_roc_curve, classification_report
 
 
 def import_data(pth):
@@ -312,7 +311,8 @@ def train_models(X_train, X_test, y_train, y_test):
     # grid search
     rfc = RandomForestClassifier(random_state=42)
     # Use a different solver if the default 'lbfgs' fails to converge
-    # Reference: https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+    # Reference:
+    # https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
     lrc = LogisticRegression(solver="lbfgs", max_iter=3000)
 
     param_grid = {
@@ -338,7 +338,12 @@ def train_models(X_train, X_test, y_train, y_test):
     # plots
     plt.figure(figsize=(15, 8))
     ax = plt.gca()
-    rfc_disp = plot_roc_curve(cv_rfc.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+    rfc_disp = plot_roc_curve(
+        cv_rfc.best_estimator_,
+        X_test,
+        y_test,
+        ax=ax,
+        alpha=0.8)
     lrc_plot.plot(ax=ax, alpha=0.8)
     plt.show()
 
@@ -370,12 +375,16 @@ def train_models(X_train, X_test, y_train, y_test):
         y_test_preds_rf,
     )
 
-    feature_importance_plot(cv_rfc, X_train, "images/feature_importance_plot.png")
+    feature_importance_plot(
+        cv_rfc,
+        X_train,
+        "images/feature_importance_plot.png")
 
 
 if __name__ == "__main__":
     BankChurners = import_data("data/BankChurners.csv")
     BankChurners = encoder_helper(BankChurners)
     perform_eda(BankChurners)
-    X_train, X_test, y_train, y_test = perform_feature_engineering(BankChurners)
+    X_train, X_test, y_train, y_test = perform_feature_engineering(
+        BankChurners)
     train_models(X_train, X_test, y_train, y_test)
