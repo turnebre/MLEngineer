@@ -1,6 +1,8 @@
 # library doc string
 """
 Contains all the functions needed to import data, perform eda, and train models
+Author: Brendan Turner
+Date: 09/17/2023
 """
 
 # import libraries
@@ -345,7 +347,6 @@ def train_models(X_train, X_test, y_train, y_test):
         ax=ax,
         alpha=0.8)
     lrc_plot.plot(ax=ax, alpha=0.8)
-    plt.show()
 
     # save best model
     joblib.dump(cv_rfc.best_estimator_, "./models/rfc_model.pkl")
@@ -360,7 +361,7 @@ def train_models(X_train, X_test, y_train, y_test):
     ax = plt.gca()
     rfc_disp = plot_roc_curve(rfc_model, X_test, y_test, ax=ax, alpha=0.8)
     lrc_plot.plot(ax=ax, alpha=0.8)
-    plt.show()
+    plt.savefig("images/rfc_lrc_plot.png")
 
     explainer = shap.TreeExplainer(cv_rfc.best_estimator_)
     shap_values = explainer.shap_values(X_test)

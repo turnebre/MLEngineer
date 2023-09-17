@@ -1,5 +1,7 @@
 """
 Test file to ensure churn_library.py correctly ran and outputted results to the appropriate directories.
+Author: Brendan Turner
+Date: 09/17/2023
 """
 import os
 import logging
